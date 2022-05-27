@@ -1,17 +1,16 @@
 import random  # for demo test
+import sys
+import time
+
+PAGESIZE = 4096
+ORDER = 100
+KEYSIZE = 8
+VALUESIZE = 32
 
 splits = 0
 parent_splits = 0
 fusions = 0
 parent_fusions = 0
-
-
-
-
-
-
-
-
 
 
 
@@ -384,7 +383,132 @@ def demo():
 
 
 
+def createType(type_name, prim_key, fields):
+    print("fjhdfkjd")
+    return True
+
+def deleteType(type_name):
+    print("fjhdfkjd")
+    return True
+
+def listType(outputFile):
+    print("fjhdfkjd")
+    return True
+
+def createRecord(type_name, fields):
+    print("fjhdfkjd")
+    return True
+
+def deleteRecord(type_name, prim_key):
+    print("fjhdfkjd")
+    return True
+
+def updateRecord(type_name, prim_key, fields):
+    print("fjhdfkjd")
+    return True
+
+def searchRecord(type_name, prim_key, outputFile):
+    print("fjhdfkjd")
+    return True
+
+def listRecord(type_name, outputFile):
+    print("fjhdfkjd")
+    return True
+
+def filterRecord(type_name, condition, outputFile):
+    print("fjhdfkjd")
+    return True
+
 
 
 if __name__ == '__main__':
     demo()
+
+    inputFileName = sys.argv[1]
+outputFileName = sys.argv[2]
+
+inputFile = open(inputFileName, 'r')
+outputFile = open(outputFileName, 'w')
+logFile = open('horadrimLog.csv','w+')
+
+lines = inputFile.readlines()
+
+for line in lines:
+    words = line.split()
+
+    if words[0].lower() == "create" and words[1].lower() == "type":
+        type_name = words[2]
+        nof_fields = int(words[3])
+        prim_key_order = int(words[4])
+
+        prim_key = words[4+prim_key_order]
+
+        fields = [None] * nof_fields
+
+        for i in range(nof_fields):
+            fields[i] = words[5+i]
+
+        success = createType(type_name, prim_key, fields)
+
+
+    if words[0].lower() == "delete" and words[1].lower() == "type":
+        type_name = words[2]
+
+        success = deleteType(type_name)
+
+    if words[0].lower() == "list" and words[1].lower() == "type":
+
+        success = listType(outputFile)
+
+    if words[0].lower() == "create" and words[1].lower() == "record":
+        type_name = words[2]
+        fields = []
+
+        for i in range(3,len(words)):
+            fields.append(words[i])
+
+        success = createRecord(type_name, fields)
+
+    if words[0].lower() == "delete" and words[1].lower() == "record":
+        type_name = words[2]
+        prim_key = words[3]
+
+        success = deleteRecord(type_name, prim_key)
+
+    if words[0].lower() == "update" and words[1].lower() == "record":
+        type_name = words[2]
+        prim_key = words[3]
+        fields = []
+
+        for i in range(4,len(words)):
+            fields.append(words[i])
+
+        success = updateRecord(type_name, prim_key, fields)
+
+    if words[0].lower() == "search" and words[1].lower() == "record":
+        type_name = words[2]
+        prim_key = words[3]
+
+        success = searchRecord(type_name, prim_key, outputFile)
+
+    if words[0].lower() == "list" and words[1].lower() == "record":
+        type_name = words[2]
+
+        success = listRecord(type_name, outputFile)
+
+    if words[0].lower() == "filter" and words[1].lower() == "record":
+        type_name = words[2]
+        condition = words[3]
+
+        success = filterRecord(type_name, condition, outputFile)
+
+
+    if success:
+        x = "success"
+    else:
+        x = "failure"
+
+    logFile.write(str(int(time.time())) + "," + line + "," + x+"\n")
+
+
+
