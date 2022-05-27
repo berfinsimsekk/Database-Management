@@ -6,6 +6,15 @@ fusions = 0
 parent_fusions = 0
 
 
+
+
+
+
+
+
+
+
+
 class Node(object):
     """Base node object. It should be index node
     Each node stores keys and children.
