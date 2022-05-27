@@ -1,6 +1,7 @@
 import random  # for demo test
 import sys
 import time
+import json
 
 PAGESIZE = 4096
 ORDER = 100
@@ -444,7 +445,7 @@ def saveBTrees():
         for j in range(len(leaves)):
             dic[leaves[j]] = values[j]
 
-        file.write(str(dic))
+        file.write(str(json.dumps(dic)))
 
         i = i + 1
 
@@ -463,8 +464,35 @@ def getAllTypeNames():
 
     return type_names
 
+def createbTrees():
+
+    type_names = getAllTypeNames()
+
+    i = 0
+
+    for type_name in type_names:
+
+        file = open("bTree"+type_names[i]+".txt", "r+")
+
+        bplustree = BPlusTree()
+
+        text = file.read()
+
+        dic = json.loads(text)
+
+        for key in dic:
+            bplustree.insert(key, dic[key])
+
+        bTrees[type_name] = bplustree
+
+        i = i + 1
+
+
+
 if __name__ == '__main__':
-    demo()
+    #demo()
+
+    createbTrees()
 
     inputFileName = sys.argv[1]
     outputFileName = sys.argv[2]
@@ -556,14 +584,16 @@ if __name__ == '__main__':
     
   
     bplustree = BPlusTree()
-    #random_list = random.sample(range(1, 100), 20)
-    random_list = [1,5,2,3,4,6,7,8]
+    random_list = random.sample(range(1, 100), 20)
+    random_list = ["a", "b", "c"]
     for i in random_list:
         bplustree[i] = 'test' + str(i)
         print('Insert ' + str(i))
         bplustree.show()
 
     bTrees["Angel"] = bplustree
+
+    #print(bTrees['Angel'].find("5").keys)
 
     saveBTrees()
 
