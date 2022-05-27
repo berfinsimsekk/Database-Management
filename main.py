@@ -12,6 +12,8 @@ parent_splits = 0
 fusions = 0
 parent_fusions = 0
 
+bTrees = {}
+
 
 
 class Node(object):
@@ -379,7 +381,7 @@ def demo():
         bplustree.show()
     """
 
-    print(bplustree.find(5).getAddress(5))
+   # print(bplustree.find(5).getAddress(5))
 
 
 
@@ -419,13 +421,54 @@ def filterRecord(type_name, condition, outputFile):
     print("fjhdfkjd")
     return True
 
+def saveBTrees():
 
+    
+    type_names = getAllTypeNames()
+    i = 0
+    for bTree_name in bTrees:
+        leaves = []
+        values = []
+        dic = {}
+        bTree = bTrees[bTree_name]
+        file = open("bTree"+type_names[i]+".txt", "w+")
+
+        leftMost = bTree.leftmost_leaf()
+
+
+        while leftMost is not None:
+            leaves.extend(leftMost.keys)
+            values.extend(leftMost.values) 
+            leftMost =  leftMost.next      
+
+        for j in range(len(leaves)):
+            dic[leaves[j]] = values[j]
+
+        file.write(str(dic))
+
+        i = i + 1
+
+        file.close()
+
+
+def getAllTypeNames():
+    systemCat = open("systemCatalog.csv", "r")
+
+    types = systemCat.readlines()
+    types = types[1:]
+    type_names = []
+
+    for type in types:
+        type_names.append(type.split(',')[0])
+
+    return type_names
 
 if __name__ == '__main__':
     demo()
 
     inputFileName = sys.argv[1]
     outputFileName = sys.argv[2]
+
 
     inputFile = open(inputFileName, 'r')
     outputFile = open(outputFileName, 'w')
@@ -509,6 +552,20 @@ if __name__ == '__main__':
             x = "failure"
 
         logFile.write(str(int(time.time())) + "," + line + "," + x+"\n")
+
+    
+  
+    bplustree = BPlusTree()
+    #random_list = random.sample(range(1, 100), 20)
+    random_list = [1,5,2,3,4,6,7,8]
+    for i in random_list:
+        bplustree[i] = 'test' + str(i)
+        print('Insert ' + str(i))
+        bplustree.show()
+
+    bTrees["Angel"] = bplustree
+
+    saveBTrees()
 
 
 
