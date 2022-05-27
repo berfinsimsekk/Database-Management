@@ -386,16 +386,36 @@ def demo():
 
 
 
-def createType(type_name, prim_key, fields):
-    print("fjhdfkjd")
+def createType(type_name, prim_key, fieldsAndTypes):
+
+    bplustree = BPlusTree()
+
+    bTrees[type_name] = bplustree
+
+    file = open("stytemCatalog.csv", "a+")
+
+    file.write(type_name+","+str(fieldsAndTypes)+"\n")
+
+    file.close()
+
     return True
 
 def deleteType(type_name):
-    print("fjhdfkjd")
+    
+    del bTrees[type_name]
+
+    file = open("stytemCatalog.csv", "a+")
+
+    #imdaaaaaaaaaaaat
     return True
 
 def listType(outputFile):
-    print("fjhdfkjd")
+    
+    types = getAllTypeNames()
+
+    for type in types:
+        outputFile.write(type+"\n")
+
     return True
 
 def createRecord(type_name, fields):
@@ -411,7 +431,9 @@ def updateRecord(type_name, prim_key, fields):
     return True
 
 def searchRecord(type_name, prim_key, outputFile):
-    print("fjhdfkjd")
+    
+    bTree = bTrees[type_name].find(prim_key).getAddress(prim_key)
+    #gerisi yapılcak
     return True
 
 def listRecord(type_name, outputFile):
@@ -512,14 +534,14 @@ if __name__ == '__main__':
             nof_fields = int(words[3])
             prim_key_order = int(words[4])
 
-            prim_key = words[4+prim_key_order]
+            prim_key = words[3+2*prim_key_order]
 
-            fields = [None] * nof_fields
+            fieldsAndTypes = [None] * nof_fields*2
 
-            for i in range(nof_fields):
-                fields[i] = words[5+i]
+            for i in range(nof_fields*2):
+                fieldsAndTypes[i] = words[5+i]
 
-            success = createType(type_name, prim_key, fields)
+            success = createType(type_name, prim_key, fieldsAndTypes)
 
 
         if words[0].lower() == "delete" and words[1].lower() == "type":
@@ -596,6 +618,9 @@ if __name__ == '__main__':
     #print(bTrees['Angel'].find("5").keys)
 
     saveBTrees()
+
+    outputFile.close()
+    inputFile.close()
 
 
 
