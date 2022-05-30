@@ -388,13 +388,13 @@ def demo():
 
 def createType(type_name, prim_key, fieldsAndTypes):
 
-    print("GELDM")
+    print("create typedayım")
     bplustree = BPlusTree()
 
     bTrees[type_name] = bplustree
 
     file = open("systemCatalog.csv", "a+")
-    f = open(type_name+"1.txt", "w")
+    f = open(type_name+"1.txt", "a+")
 
     file.write(type_name+","+str(fieldsAndTypes)+","+type_name+"1.txt"+"\n")
 
@@ -406,14 +406,96 @@ def createType(type_name, prim_key, fieldsAndTypes):
     nofRecords = math.floor(PAGESIZE / nofFields)
 
 
-    text = (" " * lengthOfARecord) * nofRecords
+    text = "0"+(" " * lengthOfARecord)
 
     for page in range(PAGE_IN_A_FILE):
-        print("")
+
+    
         f.write("0")
-        f.write(text)
+        for i in range(nofRecords):
+            f.write(text)
 
     file.close()
+    f.close()
+
+    return True
+
+
+
+def createRecord(type_name, fields):
+
+    print("create recorddayım")
+
+    systemCat = open("systemCatalog.csv")
+
+    lines = systemCat.readlines()
+
+    text = ""
+
+    for line in lines:
+        if line[0: len(type_name)] == type_name:
+            text = line
+            break
+
+    #print(text,end="")
+    fileName = text.split(',')[-1][:-1]
+
+    #print(fileName,end="")
+
+    f = open(fileName, "r+")
+    byte= 0
+    f.seek(byte)
+    processedPage = 0
+    isFull = False
+    pageNo = 0
+
+    nofFields = len(fields)
+    lengthOfARecord = int(nofFields * 20)
+    recordsInAPage = int(math.floor((PAGESIZE-1)/(lengthOfARecord+1)))
+    print(recordsInAPage)
+    updfields = ""
+    for fd in fields:
+        a = '{:20}'.format(fd)
+        updfields = updfields + a
+    
+
+    while f.read(1) != "0":
+        print("page no", pageNo)
+        if pageNo == PAGE_IN_A_FILE-1:
+            isFull = True
+            print("doldu")
+            break
+        byte = byte + PAGESIZE
+        f.seek(byte)
+        pageNo = pageNo + 1
+        print("byte",byte)
+    recordNo = 0
+    if isFull == False:
+        f.seek(byte+1)
+        recordLocation = byte + 1
+        while f.read(1) != "0":
+            
+            recordLocation = recordLocation + lengthOfARecord + 1
+            f.seek(recordLocation)
+            recordNo = recordNo + 1
+            print("recordno: ",recordNo)
+        f.seek(recordLocation)
+        f.write("1")
+        f.seek(recordLocation + 1)
+        f.write(updfields)
+        print("records in a page",recordsInAPage)
+        if recordNo == recordsInAPage-1:
+            f.seek(byte)
+            f.write("1")
+
+        
+
+
+
+
+
+
+
 
     return True
 
@@ -432,35 +514,6 @@ def listType(outputFile):
 
     for type in types:
         outputFile.write(type+"\n")
-
-    return True
-
-def createRecord(type_name, fields):
-
-    systemCat = open("systemCatalog.csv")
-
-    lines = systemCat.readlines()
-
-    text = ""
-
-    for line in lines:
-        if line[0: len(type_name)] == type_name:
-            text = line
-            break
-
-    #print(text,end="")
-    fileName = text.split(',')[-1][:-1]
-
-    #print(fileName,end="")
-
-    f = open(fileName)
-    f.seek(0)
-
-    while f.read() != "0":
-        f.seek(PAGESIZE)
-
-
-
 
     return True
 
@@ -490,8 +543,7 @@ def saveBTrees():
     
     type_names = getAllTypeNames()
     i = 0
-    print(type_names)
-    print(bTrees)
+  
     #print(len(bTrees))
     #print(len(type_names))
     for bTree_name in bTrees:

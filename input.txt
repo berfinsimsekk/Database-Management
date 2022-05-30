@@ -1,2 +1,1 @@
-create type angel 3 1 name str alias str affiliation str
 create record angel Tyrael ArchangelOfJustice HighHeavens
