@@ -2,6 +2,8 @@ import random  # for demo test
 import sys
 import time
 import json
+import re
+import math
 
 PAGESIZE = 2000
 PAGE_IN_A_FILE = 10
@@ -386,13 +388,29 @@ def demo():
 
 def createType(type_name, prim_key, fieldsAndTypes):
 
+    print("GELDM")
     bplustree = BPlusTree()
 
     bTrees[type_name] = bplustree
 
     file = open("systemCatalog.csv", "a+")
+    f = open(type_name+"1.txt", "w")
 
-    file.write(type_name+","+str(fieldsAndTypes)+"\n")
+    file.write(type_name+","+str(fieldsAndTypes)+","+type_name+"1.txt"+"\n")
+
+    nofFields = len(fieldsAndTypes)/2
+    lengthOfARecord = int(nofFields * 20)
+    #f.seek(0)
+
+    nofRecords = math.floor(PAGESIZE / nofFields)
+
+
+    text = (" " * lengthOfARecord) * nofRecords
+
+    for page in range(PAGE_IN_A_FILE):
+        print("")
+        f.write("0")
+        f.write(text)
 
     file.close()
 
@@ -417,15 +435,39 @@ def listType(outputFile):
     return True
 
 def createRecord(type_name, fields):
-    print("fjhdfkjd")
+
+    systemCat = open("systemCatalog.csv")
+
+    lines = systemCat.readlines()
+
+    text = ""
+
+    for line in lines:
+        if line[0: len(type_name)] == type_name:
+            text = line
+            break
+
+    #print(text,end="")
+    fileName = text.split(',')[-1][:-1]
+
+    #print(fileName,end="")
+
+    f = open(fileName)
+    f.seek(0)
+
+    while f.read() != "0":
+        f.seek(PAGESIZE)
+
+
+
+
     return True
 
 def deleteRecord(type_name, prim_key):
-    print("fjhdfkjd")
+
     return True
 
 def updateRecord(type_name, prim_key, fields):
-    print("fjhdfkjd")
     return True
 
 def searchRecord(type_name, prim_key, outputFile):
@@ -435,11 +477,11 @@ def searchRecord(type_name, prim_key, outputFile):
     return True
 
 def listRecord(type_name, outputFile):
-    print("fjhdfkjd")
+
     return True
 
 def filterRecord(type_name, condition, outputFile):
-    print("fjhdfkjd")
+
     return True
 
 def saveBTrees():
@@ -447,6 +489,8 @@ def saveBTrees():
     
     type_names = getAllTypeNames()
     i = 0
+    print(type_names)
+    print(bTrees)
     #print(len(bTrees))
     #print(len(type_names))
     for bTree_name in bTrees:
@@ -531,6 +575,7 @@ if __name__ == '__main__':
     for line in lines:
         words = line.split()
 
+
         if words[0].lower() == "create" and words[1].lower() == "type":
             type_name = words[2]
             nof_fields = int(words[3])
@@ -607,7 +652,7 @@ if __name__ == '__main__':
 
     
   
-    bplustree = BPlusTree()
+    """bplustree = BPlusTree()
     random_list = random.sample(range(1, 100), 20)
     random_list = ["a", "b", "c"]
     for i in random_list:
@@ -615,7 +660,7 @@ if __name__ == '__main__':
         print('Insert ' + str(i))
         bplustree.show()
 
-    bTrees["Angel"] = bplustree
+    bTrees["Angel"] = bplustree"""
 
     #print(bTrees['Angel'].find("5").keys)
 

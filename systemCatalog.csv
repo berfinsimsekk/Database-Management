@@ -1,5 +1,5 @@
-Type Name,Attributes
-Angel, bir iki üc Dortangel,['name', 'str', 'alias', 'str', 'affiliation', 'str']
-evil,['name', 'str', 'type', 'str', 'alias', 'str', 'spell', 'str']
-angel,['name', 'str', 'alias', 'str', 'affiliation', 'str']
-evil,['name', 'str', 'type', 'str', 'alias', 'str', 'spell', 'str']
+angel,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt
+angel,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt
+angel,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt
+angel,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt
+angel,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt

@@ -1,16 +1,2 @@
-1653919361,create type angel 3 1 name str alias str affiliation str
-,success
-1653919361,create type evil 4 1 name str type str alias str spell str
-,success
-1653919361,create record angel Tyrael ArchangelOfJustice HighHeavens
-,success
-1653919361,create record angel Itherael ArchangelOfFate HighHeavens
-,success
-1653919361,update record angel Tyrael Tyrael AspectOfWisdom Horadrim
-,success
-1653919361,list record angel
-,success
-1653919361,list record evil
-,success
-1653919361,list type
+1653923621,create type angel 3 1 name str alias str affiliation str
 ,success
