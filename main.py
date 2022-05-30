@@ -3,10 +3,8 @@ import sys
 import time
 import json
 
-PAGESIZE = 4096
-ORDER = 100
-KEYSIZE = 8
-VALUESIZE = 32
+PAGESIZE = 2000
+PAGE_IN_A_FILE = 10
 
 splits = 0
 parent_splits = 0
@@ -392,7 +390,7 @@ def createType(type_name, prim_key, fieldsAndTypes):
 
     bTrees[type_name] = bplustree
 
-    file = open("stytemCatalog.csv", "a+")
+    file = open("systemCatalog.csv", "a+")
 
     file.write(type_name+","+str(fieldsAndTypes)+"\n")
 
@@ -404,7 +402,7 @@ def deleteType(type_name):
     
     del bTrees[type_name]
 
-    file = open("stytemCatalog.csv", "a+")
+    file = open("systemCatalog.csv", "a+")
 
     #imdaaaaaaaaaaaat
     return True
@@ -449,6 +447,8 @@ def saveBTrees():
     
     type_names = getAllTypeNames()
     i = 0
+    #print(len(bTrees))
+    #print(len(type_names))
     for bTree_name in bTrees:
         leaves = []
         values = []
@@ -515,6 +515,8 @@ if __name__ == '__main__':
     #demo()
 
     createbTrees()
+
+    #print(len(bTrees))
 
     inputFileName = sys.argv[1]
     outputFileName = sys.argv[2]
