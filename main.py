@@ -402,6 +402,7 @@ def createType(type_name, prim_key, fieldsAndTypes):
     lengthOfARecord = int(nofFields * 20)
     #f.seek(0)
 
+
     nofRecords = math.floor(PAGESIZE / nofFields)
 
 
