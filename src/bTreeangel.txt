@@ -1,1 +1,0 @@
-{"Itherael": "angel_1.txt,63", "Tyrael": "angel_1.txt,2", "abc": "angel_1.txt,124"}

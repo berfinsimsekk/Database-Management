@@ -491,6 +491,11 @@ def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
 
 def createRecord(type_name, fields):
 
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+
 
     systemCat = open("systemCatalog.csv")
 
@@ -521,13 +526,12 @@ def createRecord(type_name, fields):
     recordsInAPage = int(math.floor((PAGESIZE-1)/(lengthOfARecord+1)))
 
     primkey = fields[int(prim_key_order)-1]
-    types = getAllTypeNames()
+    
 
     if len(fields) != nofFields:
         return False
 
-    if type_name not in types:
-        return False
+    
     
     b_tree = bTrees[type_name]
     
@@ -682,6 +686,8 @@ def listType(outputFile):
 #  
 def deleteRecord(type_name, prim_key):
 
+    
+
     types = getAllTypeNames()
 
     if type_name not in types:
@@ -699,7 +705,7 @@ def deleteRecord(type_name, prim_key):
     if prim_key not in keys:
         return False
     
-
+    
 
     address = bTrees[type_name].find(prim_key).getAddress(prim_key)
    
@@ -712,6 +718,7 @@ def deleteRecord(type_name, prim_key):
     f.seek(page_start)
     f.write("0")
 
+    btr = bTrees[type_name].delete(prim_key)
 
     return True
 
@@ -757,7 +764,7 @@ def searchRecord(type_name, prim_key):
     types = getAllTypeNames()
 
     if type_name not in types:
-        return False
+        return None,False
     
     b_tree = bTrees[type_name]
     
@@ -769,7 +776,7 @@ def searchRecord(type_name, prim_key):
         leftMost =  leftMost.next 
     
     if prim_key not in keys:
-        return False
+        return None,False
 
     systemCat = open("systemCatalog.csv")
 
@@ -832,17 +839,7 @@ def filterRecord(type_name, condition, outputFile):
     if type_name not in types:
         return False
     
-    b_tree = bTrees[type_name]
     
-    leftMost = b_tree.leftmost_leaf()
-    keys = []
-
-    while leftMost is not None:
-        keys.extend(leftMost.keys) 
-        leftMost =  leftMost.next 
-    
-    if prim_key not in keys:
-        return False
 
 
     b_tree = bTrees[type_name]
@@ -886,9 +883,11 @@ def filterRecord(type_name, condition, outputFile):
         if a[0] == pkey_name:
             no= 1
             edge = a[1].strip()
-        else: 
+        elif a[1]  == pkey_name:
             edge = a[0].strip()
             no = 0
+        else: 
+            return False
         result=""
 
         for key in keys:
@@ -905,15 +904,18 @@ def filterRecord(type_name, condition, outputFile):
                 outputFile.write(result+"\n")
         
     if "<" in condition:
+        #id<3
         a = condition.split("<")
         no = -1
         edge = ""
         if a[0] == pkey_name:
             no= 1
             edge = a[1].strip()
-        else: 
+        elif a[1] == pkey_name:
             edge = a[0].strip()
             no = 0
+        else: 
+            return False
         result=""
 
         for key in keys:
@@ -936,8 +938,11 @@ def filterRecord(type_name, condition, outputFile):
         if a[0] == pkey_name:
             
             edge = a[1].strip()
-        else: 
+        elif a[1]  == pkey_name:
             edge = a[0].strip()
+        
+        else:
+            return False
             
         result=""
 
@@ -1047,7 +1052,11 @@ if __name__ == '__main__':
     lines = inputFile.readlines()
 
     for line in lines:
+        #print(line)
         words = line.split()
+
+        if len(words) == 0:
+            continue
 
 
         if words[0].lower() == "create" and words[1].lower() == "type":
@@ -1104,7 +1113,9 @@ if __name__ == '__main__':
             prim_key = words[3]
 
             result,success = searchRecord(type_name, prim_key)
-            outputFile.write(result+"\n")
+
+            if result is not None:
+                outputFile.write(result+"\n")
 
             
 
