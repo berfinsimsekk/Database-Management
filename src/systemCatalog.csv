@@ -1,3 +1,2 @@
-angel,3,1,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel1.txt
-evil,4,1,['name', 'str', 'type', 'str', 'alias', 'str', 'spell', 'str'],evil1.txt
-potion,3,1,['id', 'int', 'type', 'str', 'size', 'str'],potion1.txt
+angel,3,1,['name', 'str', 'alias', 'str', 'affiliation', 'str'],angel_1.txt
+evil,4,1,['name', 'str', 'type', 'str', 'alias', 'str', 'spell', 'str'],evil_1.txt

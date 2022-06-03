@@ -389,12 +389,65 @@ def demo():
 
 
 
+def checkFileEmpty(file_name):
+    
+    systemCat = open("systemCatalog.csv")
+
+    lines = systemCat.readlines()
+
+    text = ""
+
+    type_name = file_name[0:file_name.index("_")]
+    print(type_name)
+
+    for line in lines:
+        if line[0: len(type_name)] == type_name:
+            text = line
+            break
+
+
+    nofFields = int(text.split(",")[1])
+    lengthOfARecord = int(nofFields * 20)
+
+    f = open(file_name,"r")
+    f.seek(1)
+    isEmpty = False
+    pageNo = 0
+    byte = 0
+    
+    
+    recordsInAPage = int(math.floor((PAGESIZE-1)/(lengthOfARecord+1)))
+
+    for i in range(PAGE_IN_A_FILE):
+        print(i)
+        
+        byte = byte+1
+        recordHeader = f.read(1)
+        recordNo = 0
+        if pageNo == PAGE_IN_A_FILE-1:
+                isEmpty = True
+                break
+        while recordHeader != "1":
+            if recordNo == recordsInAPage :
+                break
+            print("recordheader:",recordHeader,"byte",byte)
+            byte = byte + lengthOfARecord  +1
+            
+            f.seek(byte)
+            recordHeader = f.read(1)
+            recordNo = recordNo + 1
+        pageNo = pageNo + 1
+
+    return isEmpty
+
+
+
+
 def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
 
     x = getAllTypeNames()
 
     if type_name in x:
-        print("bu typeı yaratamazsın zaten var")
         return False
     #print("create typedayım")
     bplustree = BPlusTree()
@@ -402,11 +455,11 @@ def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
     bTrees[type_name] = bplustree
 
     file = open("systemCatalog.csv", "a+")
-    f = open(type_name+"1.txt", "a+")
+    f = open(type_name+"_1.txt", "a+")
     btreefile = open("bTree" +type_name +".txt","a+")
     #btreefile.write("{}")
 
-    file.write(type_name+","+str(nof_fields)+","+str(prim_key_order)+","+str(fieldsAndTypes)+","+type_name+"1.txt"+"\n")
+    file.write(type_name+","+str(nof_fields)+","+str(prim_key_order)+","+str(fieldsAndTypes)+","+type_name+"_1.txt"+"\n")
 
     nofFields = len(fieldsAndTypes)/2
     lengthOfARecord = int(nofFields * 20)
@@ -438,7 +491,6 @@ def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
 
 def createRecord(type_name, fields):
 
-    #print("create recorddayım")
 
     systemCat = open("systemCatalog.csv")
 
@@ -467,6 +519,27 @@ def createRecord(type_name, fields):
     prim_key_order = int(text.split(",")[2])
     lengthOfARecord = int(nofFields * 20)
     recordsInAPage = int(math.floor((PAGESIZE-1)/(lengthOfARecord+1)))
+
+    primkey = fields[int(prim_key_order)-1]
+    types = getAllTypeNames()
+
+    if len(fields) != nofFields:
+        return False
+
+    if type_name not in types:
+        return False
+    
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next 
+    
+    if primkey in keys:
+        return False
    
     updfields = ""
     for fd in fields:
@@ -508,9 +581,9 @@ def createRecord(type_name, fields):
             f.write("1")
     else:
         f.close()
-        fileno = int(re.findall("[\d]*.txt", str(fileName))[0].split('.')[0])+1
+        fileno = int(re.findall("_[\d]*.txt", str(fileName))[0].split('.')[0])+1
         #print(fileno)
-        newfilename = type_name + str(fileno) +".txt"
+        newfilename = type_name + "_"+ str(fileno) +".txt"
         #print("newfilename: ",newfilename)
         newFile = open(newfilename,"w+")
         
@@ -562,6 +635,11 @@ def createRecord(type_name, fields):
     return True
 
 def deleteType(type_name):
+
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
     
     del bTrees[type_name]
 
@@ -594,12 +672,34 @@ def listType(outputFile):
     for type in types:
         outputFile.write(type+"\n")
 
+    if len(types)==0:
+        return False 
+
     return True
 
 
 #BURAYA TEKRAR BAKALIM KONTROLLLLLLLLLLLLLLLL
 #  
 def deleteRecord(type_name, prim_key):
+
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+    
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next 
+    
+    if prim_key not in keys:
+        return False
+    
+
 
     address = bTrees[type_name].find(prim_key).getAddress(prim_key)
    
@@ -616,6 +716,23 @@ def deleteRecord(type_name, prim_key):
     return True
 
 def updateRecord(type_name, prim_key, fields):
+
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+    
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next 
+    
+    if prim_key not in keys:
+        return False
 
     address = bTrees[type_name].find(prim_key).getAddress(prim_key)
 
@@ -636,6 +753,23 @@ def updateRecord(type_name, prim_key, fields):
     return True
 
 def searchRecord(type_name, prim_key):
+
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+    
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next 
+    
+    if prim_key not in keys:
+        return False
 
     systemCat = open("systemCatalog.csv")
 
@@ -664,6 +798,11 @@ def searchRecord(type_name, prim_key):
 
 def listRecord(type_name, outputFile):
 
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+
     b_tree = bTrees[type_name]
     
     leftMost = b_tree.leftmost_leaf()
@@ -674,14 +813,36 @@ def listRecord(type_name, outputFile):
         leftMost =  leftMost.next   
 
     keys.sort
+
+    if len(keys)==0:
+        return False 
     
     for key in keys:
         result,success = searchRecord(type_name,key)
         outputFile.write(result+"\n")
+    
+    
 
     return True
 
 def filterRecord(type_name, condition, outputFile):
+
+    types = getAllTypeNames()
+
+    if type_name not in types:
+        return False
+    
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next 
+    
+    if prim_key not in keys:
+        return False
 
 
     b_tree = bTrees[type_name]
@@ -881,7 +1042,7 @@ if __name__ == '__main__':
 
     inputFile = open(inputFileName, 'r')
     outputFile = open(outputFileName, 'w')
-    logFile = open('horadrimLog.csv','w+')
+    logFile = open('horadrimLog.csv','a+')
 
     lines = inputFile.readlines()
 
@@ -965,7 +1126,7 @@ if __name__ == '__main__':
         else:
             x = "failure"
 
-        logFile.write(str(int(time.time())) + "," + line + "," + x+"\n")
+        logFile.write(str(int(time.time())) + "," + line.strip() + "," + x+"\n")
 
     
   
@@ -982,7 +1143,7 @@ if __name__ == '__main__':
     #print(bTrees['Angel'].find("5").keys)
 
     saveBTrees()
-
+    #print(checkFileEmpty("berf_1.txt"))
     outputFile.close()
     inputFile.close()
 
