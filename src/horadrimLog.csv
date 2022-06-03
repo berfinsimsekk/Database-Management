@@ -1,0 +1,21 @@
+1654260609,create record evil Diablo PrimeEvil LordOfTerror redLightningHose
+,success
+1654260609,create type angel 3 1 name str alias str affiliation str
+,failure
+1654260609,delete record angel Itherael
+,success
+1654260609,create type potion 3 1 id int type str size str
+,failure
+1654260609,create record potion 4 healing greater
+,success
+1654260609,create record potion 11 stamina standard
+,success
+1654260609,create record potion 6 mana minor
+,success
+1654260609,create record evil Belial LesserEvil LordOfLies flySwarms
+,success
+1654260609,filter record potion id=6
+,success
+1654260609,search record angel Tyrael
+,success
+1654260609,filter record evil name>Baal,success

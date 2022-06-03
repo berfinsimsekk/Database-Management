@@ -1,1 +1,1 @@
-{}
+{"Belial": "evil1.txt,1055", "Diablo": "evil1.txt,974"}

@@ -1,1 +1,1 @@
-{"AMK": "angel1.txt,2063", "Itherael": "angel1.txt,63", "Tyrael": "angel1.txt,2002"}
+{"Itherael": "angel1.txt,63", "Tyrael": "angel1.txt,2"}

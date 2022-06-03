@@ -1,11 +1,12 @@
 from fileinput import filename
-import random  # for demo test
+import random
 import sys
 import time
 import json
 import re
 import os
 import math
+import ast
 
 PAGESIZE = 2000
 PAGE_IN_A_FILE = 10
@@ -390,6 +391,11 @@ def demo():
 
 def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
 
+    x = getAllTypeNames()
+
+    if type_name in x:
+        print("bu typeı yaratamazsın zaten var")
+        return False
     #print("create typedayım")
     bplustree = BPlusTree()
 
@@ -398,7 +404,7 @@ def createType(type_name, nof_fields, prim_key_order, fieldsAndTypes):
     file = open("systemCatalog.csv", "a+")
     f = open(type_name+"1.txt", "a+")
     btreefile = open("bTree" +type_name +".txt","a+")
-    btreefile.write("{}")
+    #btreefile.write("{}")
 
     file.write(type_name+","+str(nof_fields)+","+str(prim_key_order)+","+str(fieldsAndTypes)+","+type_name+"1.txt"+"\n")
 
@@ -590,9 +596,13 @@ def listType(outputFile):
 
     return True
 
+
+#BURAYA TEKRAR BAKALIM KONTROLLLLLLLLLLLLLLLL
+#  
 def deleteRecord(type_name, prim_key):
 
     address = bTrees[type_name].find(prim_key).getAddress(prim_key)
+   
     file = address.split(',')[0]
     byte = int(address.split(',')[1])
     f = open(file,"r+")
@@ -672,6 +682,118 @@ def listRecord(type_name, outputFile):
     return True
 
 def filterRecord(type_name, condition, outputFile):
+
+
+    b_tree = bTrees[type_name]
+    
+    leftMost = b_tree.leftmost_leaf()
+    keys = []
+
+    while leftMost is not None:
+        keys.extend(leftMost.keys) 
+        leftMost =  leftMost.next   
+
+    i = 0
+    for key in keys:
+        if key.isnumeric():
+            keys[i] = int(key)
+        i = i+1
+
+    keys.sort()
+    systemCat = open("systemCatalog.csv")
+
+    lines = systemCat.readlines()
+
+    text = ""
+
+    for line in lines:
+        if line[0: len(type_name)] == type_name:
+            text = line
+            break
+
+    pkey_order = int(text.split(",")[2])
+
+    b = text.split(",")[3+(pkey_order-1)*2].strip("][")
+    b2 = b.replace("'","") 
+    pkey_name = b2.replace(" ","")    
+    
+
+    if ">" in condition:
+        a = condition.split(">")
+        no = -1
+        edge = ""
+        if a[0] == pkey_name:
+            no= 1
+            edge = a[1].strip()
+        else: 
+            edge = a[0].strip()
+            no = 0
+        result=""
+
+        for key in keys:
+
+            if str(key).isnumeric():
+                key = int(key)
+                edge = int(edge)
+            if no == 0 and key < edge:  # 5>id
+                result,success = searchRecord(type_name,str(key))
+                outputFile.write(result+"\n")
+                
+            if no ==1 and key > edge:   #id > 5
+                result,success = searchRecord(type_name,str(key))
+                outputFile.write(result+"\n")
+        
+    if "<" in condition:
+        a = condition.split("<")
+        no = -1
+        edge = ""
+        if a[0] == pkey_name:
+            no= 1
+            edge = a[1].strip()
+        else: 
+            edge = a[0].strip()
+            no = 0
+        result=""
+
+        for key in keys:
+
+            if str(key).isnumeric():
+                key = int(key)
+                edge = int(edge)
+            if no == 0 and key > edge:  # 5<id
+                result,success = searchRecord(type_name,str(key))
+                outputFile.write(result+"\n")
+                
+            if no ==1 and key < edge:   #id < 5
+                result,success = searchRecord(type_name,str(key))
+                outputFile.write(result+"\n")
+
+    if "=" in condition:
+        a = condition.split("=")
+       
+        edge = ""
+        if a[0] == pkey_name:
+            
+            edge = a[1].strip()
+        else: 
+            edge = a[0].strip()
+            
+        result=""
+
+        for key in keys:
+
+            if str(key).isnumeric():
+                key = int(key)
+                edge = int(edge)
+            if  key == edge:  # 5=id
+                result,success = searchRecord(type_name,str(key))
+                outputFile.write(result+"\n")
+                
+            
+        
+            
+
+
 
     return True
 
@@ -821,7 +943,7 @@ if __name__ == '__main__':
             prim_key = words[3]
 
             result,success = searchRecord(type_name, prim_key)
-            outputFile.write(result)
+            outputFile.write(result+"\n")
 
             
 
